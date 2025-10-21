@@ -60,6 +60,18 @@
     <fragment
         android:id="@+id/loginFragment"
         android:name="com.example.proyecto_grupo5.ui.Login.LoginFragment"
-        android:label="fragment_login"
-        tools:layout="@layout/fragment_login" />
+        android:label="INCIO DE SECION"
+        tools:layout="@layout/fragment_login" >
+        <action
+            android:id="@+id/action_loginFragment_to_nav_registroUser"
+            app:destination="@id/nav_registroUser" />
+        <action
+            android:id="@+id/action_loginFragment_to_nav_home"
+            app:destination="@id/nav_home" />
+    </fragment>
+    <fragment
+        android:id="@+id/nav_registroUser"
+        android:name="com.example.proyecto_grupo5.ui.Registro.RegistroLoginFragment"
+        android:label="REGIRSO DE USUARIO"
+        tools:layout="@layout/fragment_registro_login" />
 </navigation>
