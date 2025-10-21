@@ -1,19 +1,24 @@
-package com.example.proyecto_grupo5.ui.Login;
+package com.example.proyecto_grupo5.ui.Registro;
 
 import android.os.Bundle;
+
 import androidx.fragment.app.Fragment;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import com.example.proyecto_grupo5.R;
 
-public class LoginFragment extends Fragment {
+
+public class RegistroLoginFragment extends Fragment {
 
 
 
-    public LoginFragment() {
-
+    public RegistroLoginFragment() {
+        // Required empty public constructor
     }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -25,6 +30,7 @@ public class LoginFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_login, container, false);
+        return inflater.inflate(R.layout.fragment_registro_login, container, false);
+
     }
 }
