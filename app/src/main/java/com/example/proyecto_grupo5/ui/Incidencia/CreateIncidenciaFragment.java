@@ -16,7 +16,7 @@ import com.example.proyecto_grupo5.R;
 
 public class CreateIncidenciaFragment extends Fragment implements View.OnClickListener {
 
-    Button btnNueIn;
+    Button btnNueIn, btnNueLis;
 
 
     //esto tambien se hace
@@ -28,6 +28,8 @@ public class CreateIncidenciaFragment extends Fragment implements View.OnClickLi
         //aca se instancia los botoncitos q creee
         btnNueIn = view.findViewById(R.id.btnNueIn);
         btnNueIn.setOnClickListener(this);
+        btnNueLis = view.findViewById(R.id.btnNueLis);
+        btnNueLis.setOnClickListener(this);
         return view;
     }
 
@@ -39,6 +41,11 @@ public class CreateIncidenciaFragment extends Fragment implements View.OnClickLi
         {
             NavController navController = Navigation.findNavController(getView());
             navController.navigate(R.id.action_nav_incidencia_to_nav_registrar);
+        }
+        if (view == btnNueLis)
+        {
+            NavController navController = Navigation.findNavController(getView());
+            navController.navigate(R.id.action_nav_incidencia_to_nav_list_inci);
         }
     }
 }
