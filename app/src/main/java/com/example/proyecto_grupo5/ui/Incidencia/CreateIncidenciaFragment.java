@@ -45,7 +45,7 @@ public class CreateIncidenciaFragment extends Fragment implements View.OnClickLi
         if (view == btnNueLis)
         {
             NavController navController = Navigation.findNavController(getView());
-            navController.navigate(R.id.action_nav_incidencia_to_nav_list_inci);
+            //navController.navigate(R.id.action_nav_incidencia_to_nav_list_inci);
         }
     }
 }
