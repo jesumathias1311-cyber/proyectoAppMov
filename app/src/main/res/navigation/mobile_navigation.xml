@@ -38,6 +38,9 @@
         <action
             android:id="@+id/action_nav_incidencia_to_nav_registrar"
             app:destination="@id/nav_registrar" />
+        <action
+            android:id="@+id/action_nav_incidencia_to_nav_list_inci"
+            app:destination="@id/nav_list_inci" />
     </fragment>
     <fragment
         android:id="@+id/nav_registrar"
@@ -49,4 +52,9 @@
         android:name="com.example.proyecto_grupo5.ui.Ajustes.Menu_AjusteFragment"
         android:label="Ajustes"
         tools:layout="@layout/fragment_menu__ajuste" />
+    <fragment
+        android:id="@+id/nav_list_inci"
+        android:name="com.example.proyecto_grupo5.ui.Incidencia.ListIncidenciaFragment"
+        android:label="Historial de Incidencias"
+        tools:layout="@layout/fragment_list_incidencia" />
 </navigation>
