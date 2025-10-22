@@ -3,20 +3,14 @@ package com.example.proyecto_grupo5.ui.Registro;
 import static com.example.proyecto_grupo5.Servidor.servidorurl;
 
 import android.os.Bundle;
-
 import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-
 import com.example.proyecto_grupo5.R;
-import com.google.android.material.textfield.TextInputEditText;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -64,17 +58,17 @@ public class RegistroLoginFragment extends Fragment implements View.OnClickListe
     }
 
     private void RegistrarUsuario() {
-        String nom_Cli = nom.getText().toString();
-        String ap_Cli = apat.getText().toString();
-        String am_Cli = amat.getText().toString();
-        String cor_Cli = cor.getText().toString();
-        String cel_Cli = telf.getText().toString();
-        String dir_Cli = dir.getText().toString();
-        String user_Cli = user.getText().toString();
-        String pass_Cli = pass.getText().toString();
+        String nom_user = nom.getText().toString();
+        String ap_user = apat.getText().toString();
+        String am_user = amat.getText().toString();
+        String cor_user = cor.getText().toString();
+        String cel_user = telf.getText().toString();
+        String dir_user = dir.getText().toString();
+        String user_user = user.getText().toString();
+        String pass_user = pass.getText().toString();
 
 
-        if(nom_Cli.isEmpty() || ap_Cli.isEmpty()|| am_Cli.isEmpty() || cor_Cli.isEmpty()|| cel_Cli.isEmpty()|| dir_Cli.isEmpty()|| user_Cli.isEmpty()|| pass_Cli.isEmpty())
+        if(nom_user.isEmpty() || ap_user.isEmpty()|| am_user.isEmpty() || cor_user.isEmpty()|| cel_user.isEmpty()|| dir_user.isEmpty()|| user_user.isEmpty()|| pass_user.isEmpty())
         {
             Toast.makeText(getContext(), "Debe completar el campo", Toast.LENGTH_SHORT).show();
 
@@ -83,28 +77,28 @@ public class RegistroLoginFragment extends Fragment implements View.OnClickListe
         {
             //registrar a BD
             RequestParams requestParams = new RequestParams();
-            requestParams.put("nom",nom_Cli);
-            requestParams.put("ap",ap_Cli);
-            requestParams.put("am",am_Cli);
-            requestParams.put("cor",cor_Cli);
-            requestParams.put("cel",cel_Cli);
-            requestParams.put("dir",dir_Cli);
-            requestParams.put("user",user_Cli);
-            requestParams.put("pass",pass_Cli);
+            requestParams.put("nom",nom_user);
+            requestParams.put("ap",ap_user);
+            requestParams.put("am",am_user);
+            requestParams.put("cor",cor_user);
+            requestParams.put("cel",cel_user);
+            requestParams.put("dir",dir_user);
+            requestParams.put("user",user_user);
+            requestParams.put("pass",pass_user);
 
 
-            String url = servidorurl + "registrar_cliente.php";
+            String url = servidorurl + "registrar_usuario.php";
 
             AsyncHttpClient httpClient = new AsyncHttpClient();
             httpClient.post(url, requestParams, new AsyncHttpResponseHandler() {
                 @Override
                 public void onSuccess(int i, Header[] headers, byte[] bytes) {
-
+                    Toast.makeText(getContext(), "Registro realizado exitosamente", Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
                 public void onFailure(int i, Header[] headers, byte[] bytes, Throwable throwable) {
-
+                    Toast.makeText(getContext(), "Error en el registro", Toast.LENGTH_SHORT).show();
                 }
 
             });
