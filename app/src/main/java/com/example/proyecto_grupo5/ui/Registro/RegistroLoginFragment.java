@@ -86,7 +86,6 @@ public class RegistroLoginFragment extends Fragment implements View.OnClickListe
             requestParams.put("user",user_user);
             requestParams.put("pass",pass_user);
 
-
             String url = servidorurl + "registrar_usuario.php";
 
             AsyncHttpClient httpClient = new AsyncHttpClient();

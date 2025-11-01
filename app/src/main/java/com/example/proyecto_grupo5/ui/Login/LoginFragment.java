@@ -5,51 +5,103 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.example.proyecto_grupo5.R;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
+
+import com.google.android.material.textfield.TextInputEditText;
+
+import cz.msebera.android.httpclient.Header;
+
+import static com.example.proyecto_grupo5.Servidor.servidorurl;
 
 public class LoginFragment extends Fragment implements View.OnClickListener {
-    Button btnRegistrarLog,btnIngresarLog;
 
-
-    public LoginFragment() {
-
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        int a= 0;
-    }
+    TextInputEditText emailEditText, passwordEditText;
+    Button btnIngresarLog, btnRegistrarLog;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view= inflater.inflate(R.layout.fragment_login, container, false);
-        btnRegistrarLog = view.findViewById(R.id.btnRegistrarLog);
-        btnRegistrarLog.setOnClickListener(this);
+
+        View view = inflater.inflate(R.layout.fragment_login, container, false);
+
+        emailEditText = view.findViewById(R.id.EmailEditText);
+        passwordEditText = view.findViewById(R.id.PasswordEditText);
         btnIngresarLog = view.findViewById(R.id.btnIngresarLog);
+        btnRegistrarLog = view.findViewById(R.id.btnRegistrarLog);
+
         btnIngresarLog.setOnClickListener(this);
+        btnRegistrarLog.setOnClickListener(this);
+
         return view;
     }
 
     @Override
     public void onClick(View view) {
-        if (view==btnIngresarLog)
-        {
-            NavController navController = Navigation.findNavController(getView());
-            navController.navigate(R.id.action_loginFragment_to_nav_home);
-        }
-        if (view==btnRegistrarLog)
-        {
+        if (view == btnIngresarLog) {
+            IniciarSesion();
+        } else if (view == btnRegistrarLog) {
             NavController navController = Navigation.findNavController(getView());
             navController.navigate(R.id.action_loginFragment_to_nav_registroUser);
         }
+    }
 
+    private void IniciarSesion() {
+        String usuario = emailEditText.getText().toString().trim();
+        String contrasena = passwordEditText.getText().toString().trim();
+
+        if (usuario.isEmpty() || contrasena.isEmpty()) {
+            Toast.makeText(getContext(), "Ingrese usuario y contraseña", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String url = servidorurl + "login.php";
+
+        RequestParams params = new RequestParams();
+        params.put("usuario", usuario);
+        params.put("contrasena", contrasena);
+
+        AsyncHttpClient client = new AsyncHttpClient();
+        client.post(url, params, new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                String respuesta = new String(responseBody).trim();
+                Log.d("LOGIN_DEBUG", "Respuesta servidor: [" + respuesta + "]");
+
+                if (respuesta.equals("success")) {
+                    Toast.makeText(getContext(), "Inicio de sesión exitoso", Toast.LENGTH_SHORT).show();
+                    NavController navController = Navigation.findNavController(getView());
+                    navController.navigate(R.id.action_loginFragment_to_nav_home);
+
+                }
+                else if (respuesta.equals("error")) {
+                    Toast.makeText(getContext(), "Usuario o contraseña incorrectos", Toast.LENGTH_SHORT).show();
+                }
+                else if (respuesta.equals("error_conexion")) {
+                    Toast.makeText(getContext(), "Error de conexión con el servidor", Toast.LENGTH_SHORT).show();
+                }
+                else if (respuesta.startsWith("error_sql")) {
+                    Toast.makeText(getContext(), "Error en base de datos: " + respuesta, Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    Toast.makeText(getContext(), "Error inesperado: " + respuesta, Toast.LENGTH_SHORT).show();
+                }
+            }
+
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                Toast.makeText(getContext(), "No se pudo conectar con el servidor", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }
