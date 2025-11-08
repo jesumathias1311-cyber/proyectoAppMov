@@ -12,6 +12,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Proyecto_Grupo5">
         <activity
+            android:name=".ui.Agente.AgenteFragment"
+            android:exported="false" />
+        <activity
+            android:name=".ui.Admin.AdminFragment"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"

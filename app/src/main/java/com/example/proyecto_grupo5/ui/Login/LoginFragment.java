@@ -23,6 +23,8 @@ import cz.msebera.android.httpclient.Header;
 
 import static com.example.proyecto_grupo5.Servidor.servidorurl;
 
+import org.json.JSONObject;
+
 public class LoginFragment extends Fragment implements View.OnClickListener {
 
     TextInputEditText emailEditText, passwordEditText;
@@ -72,28 +74,47 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
 
         AsyncHttpClient client = new AsyncHttpClient();
         client.post(url, params, new AsyncHttpResponseHandler() {
+
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                 String respuesta = new String(responseBody).trim();
                 Log.d("LOGIN_DEBUG", "Respuesta servidor: [" + respuesta + "]");
 
-                if (respuesta.equals("success")) {
-                    Toast.makeText(getContext(), "Inicio de sesión exitoso", Toast.LENGTH_SHORT).show();
-                    NavController navController = Navigation.findNavController(getView());
-                    navController.navigate(R.id.action_loginFragment_to_nav_home);
+                try {
+                    JSONObject json = new JSONObject(respuesta);
+                    String status = json.getString("status");
 
-                }
-                else if (respuesta.equals("error")) {
-                    Toast.makeText(getContext(), "Usuario o contraseña incorrectos", Toast.LENGTH_SHORT).show();
-                }
-                else if (respuesta.equals("error_conexion")) {
-                    Toast.makeText(getContext(), "Error de conexión con el servidor", Toast.LENGTH_SHORT).show();
-                }
-                else if (respuesta.startsWith("error_sql")) {
-                    Toast.makeText(getContext(), "Error en base de datos: " + respuesta, Toast.LENGTH_SHORT).show();
-                }
-                else {
-                    Toast.makeText(getContext(), "Error inesperado: " + respuesta, Toast.LENGTH_SHORT).show();
+                    if (status.equals("success")) {
+                        String rol = json.getString("rol");
+                        String nombre = json.getString("nombre_completo");
+
+                        Toast.makeText(getContext(), "Bienvenido " + nombre + " (" + rol + ")", Toast.LENGTH_SHORT).show();
+
+                        NavController navController = Navigation.findNavController(getView());
+
+                        if (rol.equalsIgnoreCase("admin")) {
+                            navController.navigate(R.id.action_loginFragment_to_nav_admin);
+                        } else if (rol.equalsIgnoreCase("agente")) {
+                            navController.navigate(R.id.action_loginFragment_to_nav_agente);
+                        } else {
+                            navController.navigate(R.id.action_loginFragment_to_nav_home);
+                        }
+
+                    } else if (status.equals("error")) {
+                        Toast.makeText(getContext(), "Usuario o contraseña incorrectos", Toast.LENGTH_SHORT).show();
+                    } else if (status.equals("faltan_datos")) {
+                        Toast.makeText(getContext(), "Faltan datos para iniciar sesión", Toast.LENGTH_SHORT).show();
+                    } else if (status.equals("error_conexion")) {
+                        Toast.makeText(getContext(), "Error de conexión con el servidor", Toast.LENGTH_SHORT).show();
+                    } else if (status.equals("error_sql")) {
+                        Toast.makeText(getContext(), "Error en base de datos", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getContext(), "Respuesta inesperada: " + respuesta, Toast.LENGTH_SHORT).show();
+                    }
+
+                } catch (Exception e) {
+                    Toast.makeText(getContext(), "Error interpretando respuesta", Toast.LENGTH_SHORT).show();
+                    Log.e("LOGIN_DEBUG", "Excepción: " + e.getMessage());
                 }
             }
 
