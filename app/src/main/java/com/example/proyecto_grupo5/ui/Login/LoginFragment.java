@@ -88,17 +88,13 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
 
                     if (status.equals("success")) {
 
-                        int idUsuario = json.getInt("id_usuario");  //
+                        int idUsuario = json.getInt("id");
                         String rol = json.getString("rol");
                         String nombre = json.getString("nombre_completo");
 
-                        // guardar sesión
-                        SharedPreferences prefs = requireActivity().getSharedPreferences("SesionUsuario", Context.MODE_PRIVATE);
-                        SharedPreferences.Editor editor = prefs.edit();
-                        editor.putInt("id_usuario", idUsuario);
-                        editor.putString("rol", rol);
-                        editor.putString("nombre_completo", nombre);
-                        editor.apply();
+                        SesionUsuario.setIdUsuario(idUsuario);
+                        SesionUsuario.setRol(rol);
+                        SesionUsuario.setNombre(nombre);
 
                         Toast.makeText(getContext(), "Bienvenido " + nombre + " (" + rol + ")", Toast.LENGTH_SHORT).show();
 

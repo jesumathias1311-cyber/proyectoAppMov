@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -19,14 +20,11 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-
-import com.android.volley.DefaultRetryPolicy;
-import com.android.volley.NetworkResponse;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.example.proyecto_grupo5.R;
+import com.example.proyecto_grupo5.ui.Login.SesionUsuario;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,164 +34,123 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RegistrarFragment extends Fragment {
+import cz.msebera.android.httpclient.Header;
 
-    private Spinner spinnerTipo;
-    private EditText etTitulo, etDescripcion, etUbicacion;
-    private CheckBox chkCritica;
-    private Button btnRegistrar;
-    private ArrayList<Integer> tiposIds = new ArrayList<>();
+public class RegistrarFragment extends Fragment implements View.OnClickListener, AdapterView.OnItemSelectedListener{
+    Spinner tipos;
+    EditText descripcion;
+    Button regIncidencia,regneta;
+    ArrayList<TiposIncidencia> listaIncidencia;
+    ArrayAdapter<TiposIncidencia> adapterIncidencia;
 
-    private static final String URL_TIPOS = servidorurl + "listar_tipos.php";
-    private static final String URL_REGISTRO = servidorurl + "registrar_incidencia.php";
-
+    int idTipoIncidenciaSeleccionada;
+    @Override public void onCreate(Bundle savedInstanceState)
+    { super.onCreate(savedInstanceState); }
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_registrar, container, false);
 
-        spinnerTipo = view.findViewById(R.id.spinnerTipo);
-        etTitulo = view.findViewById(R.id.etTitulo);
-        etDescripcion = view.findViewById(R.id.etDescripcion);
-        etUbicacion = view.findViewById(R.id.etUbicacion);
-        chkCritica = view.findViewById(R.id.chkCritica);
-        btnRegistrar = view.findViewById(R.id.btnRegistrar);
+        tipos = view.findViewById(R.id.spinnerTipo);
+        descripcion = view.findViewById(R.id.etDescripcion);
+        regIncidencia = view.findViewById(R.id.btnRegistrar);
+        regIncidencia.setOnClickListener(this);
 
-        cargarTiposIncidencia();
+        // Inicializar lista y adaptador
+        listaIncidencia = new ArrayList<>();
+        adapterIncidencia = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_dropdown_item, listaIncidencia);
+        tipos.setAdapter(adapterIncidencia);
+        tipos.setOnItemSelectedListener(this);
 
-        btnRegistrar.setOnClickListener(v -> registrarIncidencia());
+        ConsultarIncidencia();
 
         return view;
     }
+    private void ConsultarIncidencia() {
+        String url = servidorurl + "consultar_tipos.php";
+        AsyncHttpClient httpClient = new AsyncHttpClient();
 
-    private void cargarTiposIncidencia() {
-        Log.d("REGISTRAR", " Cargando tipos desde: " + URL_TIPOS);
+        httpClient.post(url, new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(int i, Header[] headers, byte[] bytes) {
+                try {
+                    String respuesta = new String(bytes);
+                    JSONArray jsonArray = new JSONArray(respuesta);
 
-        StringRequest request = new StringRequest(Request.Method.GET, URL_TIPOS,
-                response -> {
-                    Log.d("REGISTRAR", " Respuesta recibida: " + response);
-                    try {
-                        JSONArray array = new JSONArray(response);
-                        ArrayList<String> nombres = new ArrayList<>();
-                        tiposIds.clear();
+                    listaIncidencia.clear();
 
-                        for (int i = 0; i < array.length(); i++) {
-                            JSONObject obj = array.getJSONObject(i);
-                            int idTipo = obj.has("id_tipo") ? obj.getInt("id_tipo") : obj.getInt("id");
-                            tiposIds.add(idTipo);
-                            nombres.add(obj.getString("nombre"));
-                        }
+                    for (int x = 0; x < jsonArray.length(); x++) {
+                        JSONObject obj = jsonArray.getJSONObject(x);
+                        int id = obj.getInt("id");
+                        String nombre = obj.getString("nombre");
 
-                        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(),
-                                android.R.layout.simple_spinner_item, nombres);
-                        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                        spinnerTipo.setAdapter(adapter);
-
-                        Log.d("REGISTRAR", " Tipos cargados: " + tiposIds + " → " + nombres);
-
-                    } catch (JSONException e) {
-                        Log.e("REGISTRAR", " Error procesando JSON: " + e.getMessage(), e);
-                        Toast.makeText(getContext(), "Error al procesar tipos", Toast.LENGTH_SHORT).show();
+                        listaIncidencia.add(new TiposIncidencia(id, nombre));
                     }
-                },
-                error -> {
-                    Log.e("REGISTRAR", " Volley error al cargar tipos: ", error);
-                    if (error.networkResponse != null) {
-                        String body = new String(error.networkResponse.data);
-                        Log.e("REGISTRAR", "Código HTTP: " + error.networkResponse.statusCode);
-                        Log.e("REGISTRAR", "Cuerpo: " + body);
-                    }
-                    Toast.makeText(getContext(), "Error de conexión al cargar tipos", Toast.LENGTH_SHORT).show();
+
+                    adapterIncidencia.notifyDataSetChanged();
+                } catch (JSONException e) {
+                    Toast.makeText(getContext(), "Error al procesar JSON", Toast.LENGTH_SHORT).show();
                 }
-        );
+            }
 
-        Volley.newRequestQueue(requireContext()).add(request);
+            @Override
+            public void onFailure(int i, Header[] headers, byte[] bytes, Throwable throwable) {
+                Toast.makeText(getContext(), "Error al conectar con el servidor", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
-    private void registrarIncidencia() {
-        String titulo = etTitulo.getText().toString().trim();
-        String descripcion = etDescripcion.getText().toString().trim();
-        String ubicacion = etUbicacion.getText().toString().trim();
-
-        int posSeleccion = spinnerTipo.getSelectedItemPosition();
-        if (posSeleccion < 0 || posSeleccion >= tiposIds.size()) {
-            Toast.makeText(getContext(), "Selecciona un tipo válido", Toast.LENGTH_SHORT).show();
-            return;
+    @Override
+    public void onClick(View v) {
+        if(v== regIncidencia) {
+            RegistrarIncidencia();
         }
-        int idTipo = tiposIds.get(posSeleccion); //
-        boolean esCritica = chkCritica.isChecked();
+    }
 
-        SharedPreferences prefs = requireActivity().getSharedPreferences("SesionUsuario", Context.MODE_PRIVATE);
-        int idUsuario = prefs.getInt("id_usuario", -1);
+    private void RegistrarIncidencia() {
+        String des = descripcion.getText().toString();
+        String spTipoIncidencia = String.valueOf(idTipoIncidenciaSeleccionada);
 
-        if (idUsuario == -1) {
-            Toast.makeText(getContext(), "Error: no se encontró la sesión del usuario", Toast.LENGTH_LONG).show();
-            return;
-        }
-        if (titulo.isEmpty() || descripcion.isEmpty() || ubicacion.isEmpty()) {
-            Toast.makeText(getContext(), "Completa todos los campos", Toast.LENGTH_SHORT).show();
-            return;
-        }
+        if (des.isEmpty())
+        { Toast.makeText(getContext(), "Debe completar el campo", Toast.LENGTH_SHORT).show(); }
+        else
+        {
+            int idUsuario = SesionUsuario.getIdUsuario();
+            Log.d("ID_USUARIO", "ID actual: " + idUsuario);
 
-        ProgressDialog progressDialog = new ProgressDialog(getContext());
-        progressDialog.setMessage("Registrando incidencia...");
-        progressDialog.setCancelable(false);
-        progressDialog.show();
+            RequestParams requestParams = new RequestParams();
+            requestParams.put("id_tipo", spTipoIncidencia);
+            requestParams.put("descripcion", des);
+            requestParams.put("id_usuario", idUsuario);
 
-        Log.d("REGISTRAR", "Enviando a: " + URL_REGISTRO);
-        StringRequest request = new StringRequest(Request.Method.POST, URL_REGISTRO,
-                response -> {
-                    progressDialog.dismiss();
-                    Log.d("REGISTRAR", "Respuesta servidor: " + response);
-                    try {
-                        JSONObject json = new JSONObject(response);
-                        if (json.optBoolean("success", false)) {
-                            Toast.makeText(getContext(), "✅ " + json.optString("message", "Registrado"), Toast.LENGTH_LONG).show();
-                            etTitulo.setText("");
-                            etDescripcion.setText("");
-                            etUbicacion.setText("");
-                            chkCritica.setChecked(false);
-                        } else {
-                            String error = json.optString("error", "Error desconocido");
-                            Toast.makeText(getContext(), "Error del servidor: " + error, Toast.LENGTH_LONG).show();
-                            Log.e("REGISTRAR", "Respuesta con error: " + response);
-                        }
-                    } catch (Exception e) {
-                        Toast.makeText(getContext(), "Error al procesar respuesta: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                        Log.e("REGISTRAR", "Excepción JSON: ", e);
-                    }
-                },
-                error -> {
-                    progressDialog.dismiss();
-                    String msg = error.getMessage();
-                    Log.e("REGISTRAR", "Volley error: ", error);
-                    if (error.networkResponse != null) {
-                        NetworkResponse nr = error.networkResponse;
-                        String body = new String(nr.data);
-                        Log.e("REGISTRAR", "Network response code: " + nr.statusCode + " body: " + body);
-                        Toast.makeText(getContext(), "Error servidor: " + nr.statusCode, Toast.LENGTH_LONG).show();
-                    } else {
-                        Toast.makeText(getContext(), "Error de conexión: " + msg, Toast.LENGTH_LONG).show();
-                    }
+            String url = servidorurl + "registrar_incidencia.php";
+            AsyncHttpClient httpClient = new AsyncHttpClient();
+            httpClient.post(url, requestParams, new AsyncHttpResponseHandler() {
+                @Override
+                public void onSuccess(int i, Header[] headers, byte[] bytes) {
+                    Toast.makeText(getContext(), "Registro realizado exitosamente", Toast.LENGTH_SHORT).show();
                 }
-        ) {
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<>();
-                params.put("id_usuario", String.valueOf(idUsuario));
-                params.put("id_tipo", String.valueOf(idTipo));
-                params.put("titulo", titulo);
-                params.put("descripcion", descripcion);
-                params.put("ubicacion", ubicacion);
-                params.put("es_critica", esCritica ? "1" : "0");
 
-                Log.d("REGISTRAR", "Params enviados: " + params);
-                return params;
-            }
-        };
+                @Override
+                public void onFailure(int i, Header[] headers, byte[] bytes, Throwable throwable) {
+                    Toast.makeText(getContext(), "Error en el registro", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+    }
 
-        RequestQueue queue = Volley.newRequestQueue(requireContext());
-        queue.add(request);
+    @Override
+    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+        if(adapterView==tipos) {
+            TiposIncidencia tipoSeleccionada = (TiposIncidencia) adapterView.getItemAtPosition(i);
+            // Guardar el ID de la marca
+            idTipoIncidenciaSeleccionada = tipoSeleccionada.getId();
+            Toast.makeText(getContext(), "ID tipo de Incidencia es: " + idTipoIncidenciaSeleccionada, Toast.LENGTH_SHORT).show(); }
+        }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
     }
 }
