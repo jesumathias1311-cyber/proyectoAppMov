@@ -1,5 +1,7 @@
 package com.example.proyecto_grupo5.ui.Login;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
@@ -85,13 +87,23 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
                     String status = json.getString("status");
 
                     if (status.equals("success")) {
+
+                        int idUsuario = json.getInt("id_usuario");  //
                         String rol = json.getString("rol");
                         String nombre = json.getString("nombre_completo");
 
+                        // guardar sesión
+                        SharedPreferences prefs = requireActivity().getSharedPreferences("SesionUsuario", Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = prefs.edit();
+                        editor.putInt("id_usuario", idUsuario);
+                        editor.putString("rol", rol);
+                        editor.putString("nombre_completo", nombre);
+                        editor.apply();
+
                         Toast.makeText(getContext(), "Bienvenido " + nombre + " (" + rol + ")", Toast.LENGTH_SHORT).show();
 
+                        //Redirecciona según rol
                         NavController navController = Navigation.findNavController(getView());
-
                         if (rol.equalsIgnoreCase("admin")) {
                             navController.navigate(R.id.action_loginFragment_to_nav_admin);
                         } else if (rol.equalsIgnoreCase("agente")) {
@@ -117,6 +129,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
                     Log.e("LOGIN_DEBUG", "Excepción: " + e.getMessage());
                 }
             }
+
 
 
             @Override

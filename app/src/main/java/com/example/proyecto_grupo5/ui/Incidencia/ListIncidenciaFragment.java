@@ -1,66 +1,91 @@
 package com.example.proyecto_grupo5.ui.Incidencia;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.Toast;
 
+import androidx.fragment.app.Fragment;
+
+import com.android.volley.Request;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.example.proyecto_grupo5.R;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link ListIncidenciaFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+
+import static com.example.proyecto_grupo5.Servidor.servidorurl;
+
 public class ListIncidenciaFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private ListView listView;
+    private ArrayList<String> listaIncidencias = new ArrayList<>();
+    private ArrayAdapter<String> adapter;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public ListIncidenciaFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ListIncidenciaFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static ListIncidenciaFragment newInstance(String param1, String param2) {
-        ListIncidenciaFragment fragment = new ListIncidenciaFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
+    private static final String URL_LISTAR = servidorurl + "listar_incidencias.php";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_list_incidencia, container, false);
+
+        View view = inflater.inflate(R.layout.fragment_list_incidencia, container, false);
+
+        listView = view.findViewById(R.id.listViewIncidencias);
+        adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, listaIncidencias);
+        listView.setAdapter(adapter);
+
+        // obtener id del usuario desde SharedPreferences
+        SharedPreferences prefs = requireActivity().getSharedPreferences("SesionUsuario", Context.MODE_PRIVATE);
+        int idUsuario = prefs.getInt("id_usuario", -1);
+
+        if (idUsuario != -1) {
+            cargarIncidencias(idUsuario);
+        } else {
+            Toast.makeText(getContext(), "Error: no se encontró la sesión del usuario", Toast.LENGTH_LONG).show();
+        }
+
+        return view;
+    }
+
+    private void cargarIncidencias(int idUsuario) {
+        String url = URL_LISTAR + "?id_usuario=" + idUsuario;
+
+        StringRequest request = new StringRequest(Request.Method.GET, url,
+                response -> {
+                    try {
+                        JSONArray array = new JSONArray(response);
+                        listaIncidencias.clear();
+
+                        for (int i = 0; i < array.length(); i++) {
+                            JSONObject obj = array.getJSONObject(i);
+
+                            String texto = "Título: " + obj.getString("titulo") +
+                                    "\nDescripción: " + obj.getString("descripcion") +
+                                    "\nTipo: " + obj.getString("tipo") +
+                                    "\nUbicación: " + obj.getString("ubicacion") +
+                                    "\nEstado: " + obj.getString("estado");
+
+                            listaIncidencias.add(texto);
+                        }
+
+                        adapter.notifyDataSetChanged();
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Toast.makeText(getContext(), "Error procesando los datos", Toast.LENGTH_SHORT).show();
+                    }
+                },
+                error -> Toast.makeText(getContext(), "Error de conexión", Toast.LENGTH_SHORT).show()
+        );
+
+        Volley.newRequestQueue(requireContext()).add(request);
     }
 }

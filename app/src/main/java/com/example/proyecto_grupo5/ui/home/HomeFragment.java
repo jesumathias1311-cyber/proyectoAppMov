@@ -1,37 +1,50 @@
 package com.example.proyecto_grupo5.ui.home;
 
 import android.os.Bundle;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
+import com.example.proyecto_grupo5.R;
 
-import com.example.proyecto_grupo5.databinding.FragmentHomeBinding;
+public class HomeFragment extends Fragment implements View.OnClickListener {
 
-public class HomeFragment extends Fragment {
+    Button btnRegistrarInci, btnAjustes, btnCerrarSesion;
+    TextView tvBienvenida;
 
-    private FragmentHomeBinding binding;
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
 
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
-        HomeViewModel homeViewModel =
-                new ViewModelProvider(this).get(HomeViewModel.class);
+        View view = inflater.inflate(R.layout.fragment_home, container, false);
 
-        binding = FragmentHomeBinding.inflate(inflater, container, false);
-        View root = binding.getRoot();
+        tvBienvenida = view.findViewById(R.id.tvBienvenida);
+        btnRegistrarInci = view.findViewById(R.id.btnRegistrarInci);
+        btnAjustes = view.findViewById(R.id.btnAjustes);
+        btnCerrarSesion = view.findViewById(R.id.btnCerrarSesion);
 
+        btnRegistrarInci.setOnClickListener(this);
+        btnAjustes.setOnClickListener(this);
+        btnCerrarSesion.setOnClickListener(this);
 
-
-        return root;
+        return view;
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        binding = null;
+    public void onClick(View view) {
+        NavController navController = Navigation.findNavController(getView());
+
+        if (view.getId() == R.id.btnRegistrarInci) {
+            navController.navigate(R.id.nav_incidencia);
+        } else if (view.getId() == R.id.btnAjustes) {
+            navController.navigate(R.id.nav_ajuste);
+        } else if (view.getId() == R.id.btnCerrarSesion) {
+            navController.navigate(R.id.loginFragment);
+        }
     }
 }

@@ -14,4 +14,12 @@
     <string name="menu_slideshow">Slideshow</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string-array name="estados_incidencia">
+        <item>pendiente</item>
+        <item>en proceso</item>
+        <item>resuelta</item>
+        <item>cancelada</item>
+    </string-array>
+
 </resources>

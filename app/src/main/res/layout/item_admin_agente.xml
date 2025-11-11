@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="#FFFFFF"
+    android:padding="12dp"
+    android:layout_margin="8dp"
+    android:elevation="3dp">
+
+    <TextView
+        android:id="@+id/tvNombreAgente"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Nombre del Agente"
+        android:textStyle="bold"
+        android:textSize="16sp"/>
+
+    <TextView
+        android:id="@+id/tvCorreoAgente"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Correo"
+        android:textSize="14sp"/>
+
+    <TextView
+        android:id="@+id/tvCodigoAgente"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Código: AG001"
+        android:textSize="14sp"/>
+
+    <TextView
+        android:id="@+id/tvAreaAgente"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Área"
+        android:textSize="14sp"/>
+
+    <TextView
+        android:id="@+id/tvEstadoAgente"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Estado"
+        android:textStyle="italic"
+        android:paddingTop="4dp"/>
+</LinearLayout>

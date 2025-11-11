@@ -91,6 +91,36 @@
         android:id="@+id/nav_agente"
         android:name="com.example.proyecto_grupo5.ui.Agente.AgenteFragment"
         android:label="AgenteFragment"
-        tools:layout="@layout/fragment_agente" />
+        tools:layout="@layout/fragment_agente">
+
+        <action
+            android:id="@+id/action_agente_to_listadoIncidencias"
+            app:destination="@id/nav_listado_incidencias_agente" />
+
+        <action
+            android:id="@+id/action_agente_to_historialIncidencias"
+            app:destination="@id/nav_historial_incidencias_agente" />
+    </fragment>
+
+
+    <!-- Listado de Incidencias Asignadas -->
+    <fragment
+        android:id="@+id/nav_listado_incidencias_agente"
+        android:name="com.example.proyecto_grupo5.ui.Agente.ListadoIncidenciasAgenteFragment"
+        android:label="Incidencias Asignadas"
+        tools:layout="@layout/list_incidencia_agente" />
+
+    <!-- Historial de Incidencias del Agente -->
+    <fragment
+        android:id="@+id/nav_historial_incidencias_agente"
+        android:name="com.example.proyecto_grupo5.ui.Agente.HistorialIncidenciasAgenteFragment"
+        android:label="Historial de Incidencias"
+        tools:layout="@layout/historial_incidencias_agente" />
+
+    <fragment
+        android:id="@+id/nav_admin_list_agentes"
+        android:name="com.example.proyecto_grupo5.ui.Admin.Admin_ListAgentesFragment"
+        android:label="Lista de Agentes"
+        tools:layout="@layout/fragment_admin_list_agentes" />
 
 </navigation>

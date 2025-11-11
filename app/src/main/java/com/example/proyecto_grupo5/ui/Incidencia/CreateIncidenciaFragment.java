@@ -39,12 +39,12 @@ public class CreateIncidenciaFragment extends Fragment implements View.OnClickLi
     public void onClick(View view) {
         if (view == btnNueIn)
         {
-            NavController navController = Navigation.findNavController(getView());
+            NavController navController = Navigation.findNavController(view);
             navController.navigate(R.id.action_nav_incidencia_to_nav_registrar);
         }
         if (view == btnNueLis)
         {
-            NavController navController = Navigation.findNavController(getView());
+            NavController navController = Navigation.findNavController(view);
             navController.navigate(R.id.action_nav_incidencia_to_nav_list_inci);
         }
     }

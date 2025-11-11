@@ -5,52 +5,55 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#F6F6F6"
     tools:context=".ui.Agente.AgenteFragment">
 
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:orientation="vertical"
-        android:padding="16dp"
+    <!-- Título principal -->
+    <TextView
+        android:id="@+id/tvBienvenidaAgente"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Bienvenido, Agente"
+        android:textColor="#070000"
+        android:textSize="22sp"
+        android:textStyle="bold"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="48dp" />
 
-        <TextView
-            android:id="@+id/tvBienvenidaAgente"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:paddingBottom="12dp"
-            android:text="Bienvenido, Agente"
-            android:textColor="#090000"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+    <!-- Botón: Ver incidencias asignadas -->
+    <Button
+        android:id="@+id/btnVerIncidencias"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginTop="60dp"
+        android:backgroundTint="#070000"
+        android:text="🗂️ Ver Incidencias Asignadas"
+        android:textColor="@android:color/white"
+        android:textAllCaps="false"
+        android:elevation="4dp"
+        app:layout_constraintTop_toBottomOf="@+id/tvBienvenidaAgente"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-        <Button
-            android:id="@+id/btnVerIncidencias"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:backgroundTint="#070000"
-            android:text="Ver Incidencias Asignadas" />
-
-        <Button
-            android:id="@+id/btnReportarIncidencia"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:backgroundTint="#070000"
-            android:text="Reportar Nueva Incidencia" />
-
-        <!-- lista de incidencias -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerIncidenciasAgente"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:layout_marginTop="12dp"
-            tools:listitem="@layout/fragment_list_incidencia" />
-    </LinearLayout>
+    <!-- Botón: Ver historial de incidencias -->
+    <Button
+        android:id="@+id/btnHistorialIncidencias"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginTop="30dp"
+        android:backgroundTint="#444444"
+        android:text="📜 Ver Historial de Incidencias"
+        android:textColor="@android:color/white"
+        android:textAllCaps="false"
+        android:elevation="4dp"
+        app:layout_constraintTop_toBottomOf="@+id/btnVerIncidencias"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
